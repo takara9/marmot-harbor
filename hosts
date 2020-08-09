@@ -1,0 +1,3 @@
+harbor    ansible_connection=local
+
+

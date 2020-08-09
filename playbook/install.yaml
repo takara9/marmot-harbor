@@ -1,0 +1,65 @@
+- name: basic information
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Install a list of packages
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+  roles:
+    - docker
+    - vdisks
+  tasks:
+  - debug: msg="{{ ansible_facts }}"        
+  - shell: |
+      mkdir cert
+      cd cert
+      openssl genrsa -out ca.key 4096
+      openssl req -x509 -new -nodes -sha512 -days 3650 \
+         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
+         -key ca.key \
+         -out ca.crt
+      openssl genrsa -out harbor.labs.local.key 4096
+      touch ~/.rnd
+      openssl req -sha512 -new \
+         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
+         -key harbor.labs.local.key \
+         -out harbor.labs.local.csr      
+      cat > v3.ext <<EOF
+        authorityKeyIdentifier=keyid,issuer
+        basicConstraints=CA:FALSE
+        keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+        extendedKeyUsage = serverAuth
+        subjectAltName = @alt_names
+        
+        [alt_names]
+        DNS.1=harbor.labs.local
+        DNS.2=harbor
+        IP.1=192.168.1.71
+      EOF
+      openssl x509 -req -sha512 -days 3650 \
+        -extfile v3.ext \
+        -CA ca.crt -CAkey ca.key -CAcreateserial \
+        -in harbor.labs.local.csr \
+        -out harbor.labs.local.crt
+      mkdir -p /data
+      mkdir -p /data/cert
+      cp harbor.labs.local.crt /data/cert/
+      cp harbor.labs.local.key /data/cert/
+      openssl x509 -inform PEM -in harbor.labs.local.crt -out harbor.labs.local.cert
+      mkdir -p /etc/docker/certs.d/harbor.labs.local
+      cp harbor.labs.local.cert /etc/docker/certs.d/harbor.labs.local
+      cp harbor.labs.local.key /etc/docker/certs.d/harbor.labs.local
+      cp ca.crt /etc/docker/certs.d/harbor.labs.local
+      systemctl restart docker        
+    args:
+      chdir: /harbor
+
