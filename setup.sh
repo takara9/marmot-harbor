@@ -16,7 +16,8 @@
 #     esac
 #done
 
-IPorFQDN=harbor.labs.local
+#IPorFQDN=harbor.labs.local
+IPorFQDN=$(hostname -I|cut -d" " -f 3)
 
 # Housekeeping
 apt update -y
