@@ -2,8 +2,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-#ENV.store('VAGRANT_EXPERIMENTAL', 'disks') 
-
 linux_os = "ubuntu/bionic64"   # Ubuntu 18.04
 bridge_if = "en0: Wi-Fi (Wireless)"
 

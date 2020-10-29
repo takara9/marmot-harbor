@@ -66,19 +66,26 @@
         -CA ca.crt -CAkey ca.key -CAcreateserial \
         -in harbor.labs.local.csr \
         -out harbor.labs.local.crt
-      mkdir -p /data
-      mkdir -p /data/cert
-      cp harbor.labs.local.crt /data/cert/
-      cp harbor.labs.local.key /data/cert/
+      #mkdir -p /data
+      #mkdir -p /data/cert
+      #cp harbor.labs.local.crt /data/cert/
+      #cp harbor.labs.local.key /data/cert/
       openssl x509 -inform PEM -in harbor.labs.local.crt -out harbor.labs.local.cert
       mkdir -p /etc/docker/certs.d/harbor.labs.local
       cp harbor.labs.local.cert /etc/docker/certs.d/harbor.labs.local
       cp harbor.labs.local.key /etc/docker/certs.d/harbor.labs.local
       cp ca.crt /etc/docker/certs.d/harbor.labs.local
-      systemctl restart docker        
+      systemctl restart docker
     args:
       chdir: /harbor/certs
 
+  - shell: |
+      cp harbor.labs.local.cert /vagrant/harbor.labs.local.cert
+      cp harbor.labs.local.key /vagrant/harbor.labs.local
+      cp ca.crt /vagrant/ca.crt
+    args:
+      chdir: /harbor/certs
+      
   - name: Configure Internal TLS communication between Harbor Component
     shell: |
       cp ca.crt harbor_internal_ca.crt
