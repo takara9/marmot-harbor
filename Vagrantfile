@@ -9,12 +9,12 @@ bridge_if = "en0: Wi-Fi (Wireless)"
 
 vm_spec = [
   { name: "harbor",
-    cpu: 4,
-    memory: 8192,
+    cpu: 2,
+    memory: 4096,
     box: linux_os,
     private_ip: "172.16.20.3",
     public_ip: "192.168.1.71",
-    storage: [160], playbook: "install.yaml",
+    storage: [80], playbook: "install.yaml",
     comment: "Harbor" },
 ]
 
