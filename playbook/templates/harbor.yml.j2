@@ -1,11 +1,12 @@
 hostname: harbor.labs.local
-http:
-  port: 80
 https:
   port: 443
-  certificate: /harbor/cert/harbor.labs.local.crt
-  private_key: /harbor/cert/harbor.labs.local.key
-harbor_admin_password: Harbor12345
+  certificate: /harbor/certs/harbor.labs.local.crt
+  private_key: /harbor/certs/harbor.labs.local.key
+internal_tls:
+  enabled: true
+  dir: /harbor/certs
+harbor_admin_password:
 database:
   password: root123
   max_idle_conns: 50

@@ -18,10 +18,26 @@
     - docker
     - vdisks
   tasks:
-  - debug: msg="{{ ansible_facts }}"        
-  - shell: |
-      mkdir cert
-      cd cert
+  #- debug: msg="{{ ansible_facts }}"
+  - debug: msg="{{ ansible_facts.enp0s9.ipv4.address }}"
+
+  - name: Download the Harbor Installer
+    shell: |
+      gpg --keyserver hkps://keyserver.ubuntu.com --receive-keys 644FF454C0B4115C
+      curl -O -L https://github.com/goharbor/harbor/releases/download/v2.1.1/harbor-online-installer-v2.1.1.tgz
+      curl -O -L https://github.com/goharbor/harbor/releases/download/v2.1.1/harbor-online-installer-v2.1.1.tgz.asc
+      gpg -v –keyserver hkps://keyserver.ubuntu.com –verify harbor-online-installer-v2.1.1.tgz.asc
+      tar xzvf harbor-online-installer-v2.1.1.tgz
+    args:
+      chdir: /harbor
+
+  - name: Configure HTTPS Access to Harbor
+    file:
+      path: /harbor/certs
+      state: directory
+
+  - name: Configure HTTPS Access to Harbor
+    shell: |
       openssl genrsa -out ca.key 4096
       openssl req -x509 -new -nodes -sha512 -days 3650 \
          -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
@@ -43,7 +59,7 @@
         [alt_names]
         DNS.1=harbor.labs.local
         DNS.2=harbor
-        IP.1=192.168.1.71
+        IP.1={{ ansible_facts.enp0s9.ipv4.address }}
       EOF
       openssl x509 -req -sha512 -days 3650 \
         -extfile v3.ext \
@@ -61,5 +77,24 @@
       cp ca.crt /etc/docker/certs.d/harbor.labs.local
       systemctl restart docker        
     args:
-      chdir: /harbor
+      chdir: /harbor/certs
 
+  - name: Configure Internal TLS communication between Harbor Component
+    shell: |
+      cp ca.crt harbor_internal_ca.crt
+      cp ca.key harbor_internal_ca.key
+      docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p /harbor/certs
+    args:
+      chdir: /harbor/certs
+      
+  - name: copy harbor.yml
+    template:
+      src: harbor.yml.j2
+      dest: /harbor/harbor/harbor.yml
+
+  - name: Run the Installer Script
+    shell: |
+      ./install.sh
+    args:
+      chdir: /harbor/harbor
+      
