@@ -11,11 +11,10 @@ vm_spec = [
   { name: "harbor",
     cpu: 4,
     memory: 8192,
-    #disk: "100GB",
     box: linux_os,
     private_ip: "172.16.20.3",
     public_ip: "192.168.1.71",
-    storage: [40], playbook: "install.yaml",
+    storage: [160], playbook: "install.yaml",
     comment: "Harbor" },
 ]
 
@@ -58,8 +57,7 @@ Vagrant.configure("2") do |config|
 
       v.vm.provision "ansible_local" do |ansible|
         ansible.playbook       = "playbook/" + spec[:playbook]
-        ansible.install_mode   = "pip"
-        #ansible.version        = "2.9.6"    
+        ansible.install_mode   = "pip3"
         ansible.verbose        = false
         ansible.install        = true
         ansible.limit          = spec[:name] 
