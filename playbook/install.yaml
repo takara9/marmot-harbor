@@ -81,7 +81,7 @@
 
   - shell: |
       cp harbor.labs.local.cert /vagrant/harbor.labs.local.cert
-      cp harbor.labs.local.key /vagrant/harbor.labs.local
+      cp harbor.labs.local.key /vagrant/harbor.labs.local.key
       cp ca.crt /vagrant/ca.crt
     args:
       chdir: /harbor/certs
