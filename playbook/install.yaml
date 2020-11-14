@@ -19,7 +19,7 @@
     - vdisks
   tasks:
   #- debug: msg="{{ ansible_facts }}"
-  - debug: msg="{{ ansible_facts.enp0s9.ipv4.address }}"
+  #- debug: msg="{{ ansible_facts.enp0s9.ipv4.address }}"
 
   - name: Download the Harbor Installer
     shell: |
