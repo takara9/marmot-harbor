@@ -36,6 +36,11 @@
       path: /harbor/certs
       state: directory
 
+  - name: Create v3.ext
+    template:
+      src: v3.ext.j2
+      dest: /harbor/certs/v3.ext
+      
   - name: Configure HTTPS Access to Harbor
     shell: |
       openssl genrsa -out ca.key 4096
@@ -49,27 +54,11 @@
          -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
          -key harbor.labs.local.key \
          -out harbor.labs.local.csr      
-      cat > v3.ext <<EOF
-        authorityKeyIdentifier=keyid,issuer
-        basicConstraints=CA:FALSE
-        keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-        extendedKeyUsage = serverAuth
-        subjectAltName = @alt_names
-        
-        [alt_names]
-        DNS.1=harbor.labs.local
-        DNS.2=harbor
-        IP.1={{ public_ip_addr }}
-      EOF
       openssl x509 -req -sha512 -days 3650 \
         -extfile v3.ext \
         -CA ca.crt -CAkey ca.key -CAcreateserial \
         -in harbor.labs.local.csr \
         -out harbor.labs.local.crt
-      #mkdir -p /data
-      #mkdir -p /data/cert
-      #cp harbor.labs.local.crt /data/cert/
-      #cp harbor.labs.local.key /data/cert/
       openssl x509 -inform PEM -in harbor.labs.local.crt -out harbor.labs.local.cert
       mkdir -p /etc/docker/certs.d/harbor.labs.local
       cp harbor.labs.local.cert /etc/docker/certs.d/harbor.labs.local
@@ -78,7 +67,6 @@
       systemctl restart docker
     args:
       chdir: /harbor/certs
-
 
   - shell: |
       cp harbor.labs.local.cert /vagrant/harbor.labs.local.cert
