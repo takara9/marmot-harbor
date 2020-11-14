@@ -85,6 +85,7 @@
       cp ca.crt /vagrant/ca.crt
     args:
       chdir: /harbor/certs
+    when: ansible_facts.virtualization_type == "virtualbox"
       
   - name: Configure Internal TLS communication between Harbor Component
     shell: |

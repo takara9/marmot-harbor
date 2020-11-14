@@ -1,3 +1,10 @@
 harbor    ansible_connection=local
 
 
+# for Vagrant
+admin_user = vagrant
+
+# for KVM
+#admin_user = ubuntu
+
+
