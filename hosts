@@ -1,5 +1,14 @@
+###
+### ノードのリストとアクセス方法
+###
+
 harbor    ansible_connection=local
 
+
+###
+### プレイブックに与える変数
+###
+[all:vars]
 
 # for Vagrant
 admin_user = vagrant
