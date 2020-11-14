@@ -79,6 +79,7 @@
     args:
       chdir: /harbor/certs
 
+
   - shell: |
       cp harbor.labs.local.cert /vagrant/harbor.labs.local.cert
       cp harbor.labs.local.key /vagrant/harbor.labs.local.key
@@ -94,6 +95,7 @@
       docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p /harbor/certs
     args:
       chdir: /harbor/certs
+
       
   - name: copy harbor.yml
     template:
