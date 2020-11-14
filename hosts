@@ -12,8 +12,11 @@ harbor    ansible_connection=local
 
 # for Vagrant
 admin_user = vagrant
+disk1 = /dev/sdc
+disk2 = /dev/sdd
+
 
 # for KVM
 #admin_user = ubuntu
-
-
+#disk1 = /dev/vdb
+#disk2 = /dev/vdc
