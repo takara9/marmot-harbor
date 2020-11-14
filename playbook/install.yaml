@@ -59,7 +59,7 @@
         [alt_names]
         DNS.1=harbor.labs.local
         DNS.2=harbor
-        IP.1={{ ansible_facts.enp0s9.ipv4.address }}
+        IP.1={{ public_ip_addr }}
       EOF
       openssl x509 -req -sha512 -days 3650 \
         -extfile v3.ext \

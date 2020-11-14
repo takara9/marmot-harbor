@@ -17,8 +17,8 @@ vm_spec:
   - name: "harbor"
     cpu: 2
     memory: 4096
-    private_ip:  "172.16.40.71"
-    public_ip:   "192.168.1.71"
+    private_ip:  "172.16.40.75"
+    public_ip:   "192.168.1.75"
     storage:
     - 80
     comment: "Container Registry Server"
