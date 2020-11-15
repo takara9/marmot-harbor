@@ -10,8 +10,8 @@ vm_spec = [
     cpu: 2,
     memory: 4096,
     box: linux_os,
-    private_ip: "172.16.20.3",
-    public_ip: "192.168.1.71",
+    private_ip: "172.16.10.221",
+    public_ip: "192.168.1.221",
     storage: [80], playbook: "install.yaml",
     comment: "Harbor" },
 ]
