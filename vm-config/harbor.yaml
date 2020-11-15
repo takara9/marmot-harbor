@@ -7,7 +7,7 @@ domain: labs.local
 hypervisor: kvm
 
 ## Cluster Network
-private_ip_subnet: 172.16.40.0/24
+private_ip_subnet: 172.16.10.0/24
 public_ip_subnet:  192.168.1.0/24
 
 domain: labs.local
@@ -17,8 +17,8 @@ vm_spec:
   - name: "harbor"
     cpu: 2
     memory: 4096
-    private_ip:  "172.16.40.75"
-    public_ip:   "192.168.1.75"
+    private_ip:  "172.16.10.221"
+    public_ip:   "192.168.1.221"
     storage:
     - 80
     comment: "Container Registry Server"
