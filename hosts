@@ -11,13 +11,13 @@ harbor    ansible_connection=local
 [all:vars]
 
 # for Vagrant
-admin_user = vagrant
-disk1 = /dev/sdc
-disk2 = /dev/sdd
-public_ip_addr = {{ ansible_facts.enp0s9.ipv4.address }}
+#admin_user = vagrant
+#disk1 = /dev/sdc
+#disk2 = /dev/sdd
+#public_ip_addr = {{ ansible_facts.enp0s9.ipv4.address }}
 
 # for KVM
-#admin_user = ubuntu
-#disk1 = /dev/vdb
-#disk2 = /dev/vdc
-#public_ip_addr = {{ ansible_facts.ens3.ipv4.address }}
+admin_user = ubuntu
+disk1 = /dev/vdb
+disk2 = /dev/vdc
+public_ip_addr = "10.0.0.221"

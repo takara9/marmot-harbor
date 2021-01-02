@@ -8,18 +8,26 @@ hypervisor: kvm
 
 ## Cluster Network
 private_ip_subnet: 172.16.10.0/24
-public_ip_subnet:  192.168.1.0/24
+public_ip_subnet:  10.0.0.0/8
 
-domain: labs.local
+### Network device and config
+net_dev_default: enp1s0
+net_dev_private: enp2s0
+net_dev_public:  enp3s0
+
+### netplan param for elb1/elb2
+public_ip_gw: 10.0.0.1
+public_ip_dns: 192.168.1.241
 
 ### Virtual Machine Spec
 vm_spec:
   - name: "harbor"
     cpu: 2
     memory: 4096
-    private_ip:  "172.16.10.221"
-    public_ip:   "192.168.1.221"
+    private_ip:  "172.16.20.221"
+    public_ip:   "10.0.0.221"
     storage:
     - 80
+    vm_host: nagato    
     comment: "Container Registry Server"
 
