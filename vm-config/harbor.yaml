@@ -1,5 +1,5 @@
 #
-# 最小構成のK8sクラスタ
+# 最小構成のHarbor
 #
 domain: labs.local
 
@@ -7,17 +7,18 @@ domain: labs.local
 hypervisor: kvm
 
 ## Cluster Network
-private_ip_subnet: 172.16.10.0/24
+private_ip_subnet: 172.16.20.0/24
 public_ip_subnet:  10.0.0.0/8
+
 
 ### Network device and config
 net_dev_default: enp1s0
 net_dev_private: enp2s0
 net_dev_public:  enp3s0
 
-### netplan param for elb1/elb2
 public_ip_gw: 10.0.0.1
 public_ip_dns: 192.168.1.241
+
 
 ### Virtual Machine Spec
 vm_spec:
