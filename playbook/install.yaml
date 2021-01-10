@@ -46,25 +46,25 @@
     shell: |
       openssl genrsa -out ca.key 4096
       openssl req -x509 -new -nodes -sha512 -days 3650 \
-         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
+         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labo.local" \
          -key ca.key \
          -out ca.crt
-      openssl genrsa -out harbor.labs.local.key 4096
+      openssl genrsa -out harbor.labo.local.key 4096
       touch ~/.rnd
       openssl req -sha512 -new \
-         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labs.local" \
-         -key harbor.labs.local.key \
-         -out harbor.labs.local.csr      
+         -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labo.local" \
+         -key harbor.labo.local.key \
+         -out harbor.labo.local.csr      
       openssl x509 -req -sha512 -days 3650 \
         -extfile v3.ext \
         -CA ca.crt -CAkey ca.key -CAcreateserial \
-        -in harbor.labs.local.csr \
-        -out harbor.labs.local.crt
-      openssl x509 -inform PEM -in harbor.labs.local.crt -out harbor.labs.local.cert
-      mkdir -p /etc/docker/certs.d/harbor.labs.local
-      cp harbor.labs.local.cert /etc/docker/certs.d/harbor.labs.local
-      cp harbor.labs.local.key /etc/docker/certs.d/harbor.labs.local
-      cp ca.crt /etc/docker/certs.d/harbor.labs.local
+        -in harbor.labo.local.csr \
+        -out harbor.labo.local.crt
+      openssl x509 -inform PEM -in harbor.labo.local.crt -out harbor.labo.local.cert
+      mkdir -p /etc/docker/certs.d/harbor.labo.local
+      cp harbor.labo.local.cert /etc/docker/certs.d/harbor.labo.local
+      cp harbor.labo.local.key /etc/docker/certs.d/harbor.labo.local
+      cp ca.crt /etc/docker/certs.d/harbor.labo.local
       systemctl restart docker
     args:
       chdir: /harbor/certs
@@ -72,8 +72,8 @@
   - debug: msg="virtualization_type = {{ ansible_facts.virtualization_type }}"
   
   - shell: |
-      cp harbor.labs.local.cert /vagrant/harbor.labs.local.cert
-      cp harbor.labs.local.key /vagrant/harbor.labs.local.key
+      cp harbor.labo.local.cert /vagrant/harbor.labo.local.cert
+      cp harbor.labo.local.key /vagrant/harbor.labo.local.key
       cp ca.crt /vagrant/ca.crt
     args:
       chdir: /harbor/certs
