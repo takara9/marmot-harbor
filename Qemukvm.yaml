@@ -19,6 +19,7 @@ net_dev_public:  enp3s0
 public_ip_gw: 10.0.0.1
 public_ip_dns: 192.168.1.241
 
+cluster_name: harbor
 
 ### Virtual Machine Spec
 vm_spec:
@@ -29,6 +30,7 @@ vm_spec:
     public_ip:   "10.0.0.221"
     storage:
     - 80
-    vm_host: nagato    
+    vm_host: nagato
+    playbook: install.yaml
     comment: "Container Registry Server"
 
