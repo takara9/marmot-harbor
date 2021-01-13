@@ -30,7 +30,7 @@ vm_spec:
     public_ip:   "10.0.0.221"
     storage:
     - 80
-    vm_host: nagato
+    vm_host: auto
     playbook: install.yaml
     comment: "Container Registry Server"
 
