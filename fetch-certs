@@ -1,0 +1,26 @@
+#!/bin/bash
+
+CONFFN=Qemukvm.yaml
+USERID=root
+IPADDR=$(grep private_ip: $CONFFN |awk '{ print $2 }' |sed s/\"//g)
+LOCALF=$PWD/certs
+
+# ダウンロード先ディレクトリ作成
+rm -fr $LOCALF
+mkdir $LOCALF
+
+# 必要な証明書を取得
+while read line
+do
+    scp -i __work/id_rsa -o 'StrictHostKeyChecking no' $USERID@$IPADDR:/harbor/certs/$line $LOCALF/$line
+
+done <<EOF
+ca.crt
+ca.key
+harbor.labo.local.crt
+harbor.labo.local.key
+EOF
+
+# 完了
+echo "DONE"
+
