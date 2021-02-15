@@ -21,6 +21,7 @@ IPアドレスが衝突している場合は、Vagrantfileの以下のIPアド�
 ~~~
 
 
+
 ## QEMU/KVMでの起動方法
 
 仮想マシンの起動とHarborのセットアップを次のコマンドで実行する。
@@ -36,8 +37,8 @@ vm-create -f Qemukvm.yaml
 vm-destroy -f Qemukvm.yaml
 ~~~
 
+( バックアップ方法があると良いね。)
 
-※ バックアップ方法があると良いね。
 
 ## Harborの初期設定
 
@@ -45,8 +46,7 @@ https://harbor.labo.local
 ユーザーID: admin
 パスワード: Harbor12345
 
-設定の場所
-marmot-harbor/playbook/templates/harbor.yml.j2
+設定の場所 marmot-harbor/playbook/templates/harbor.yml.j2 
 
 
 ## Harborへユーザーの追加
@@ -84,10 +84,15 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain 
 MacのDocker Desktop を再起動して、証明書を読み込ませる。
 
 
+## Windows10での証明書の登録
+
+作成待ち
+
+
 
 ## docker login
 
-Macのターミナルから、Harborへログインする。
+Macのターミナルから、Harborへログインする。HarborのCA証明書が登録されていないとエラーになるので、証明書を必ず登録しておいてからログインを試みるのがお勧めです。
 
 ~~~
 maho:~ maho$ docker login -u tkr harbor.labo.local
@@ -100,6 +105,10 @@ Password:
 sudo killall -HUP mDNSResponder
 ~~~
 
+## 登録のテスト
+
+登録するコンテナイメージを Docker Hub からプルして、Harborへ登録する。
+まずは、nginx:latestをローカルへプルする。
 
 ~~~
 maho:~ maho$ docker pull nginx:latest
@@ -114,13 +123,7 @@ Status: Downloaded newer image for nginx:latest
 docker.io/library/nginx:latest
 ~~~
 
-~~~
-maho:certs maho$ docker login -u tkr harbor.labo.local
-Password: 
-Login Succeeded
-~~~
-
-タグを付与してHarborレジストリへプッシュする
+タグを付与してHarborレジストリへプッシュする。
 
 ~~~
 maho:certs maho$ docker tag nginx:latest harbor.labo.local/tkr/nginx:latest
@@ -134,7 +137,8 @@ c20672db3628: Pushed
 latest: digest: sha256:1a53eb723d17523512bd25c27299046cfa034cce309f4ed330c943a304513f59 size: 1362
 ~~~
 
-プッシュの結果確認
+ブラウザで、https://harbor.labo.local/をアクセスして、プッシュの結果確認を確認する。
+ローカル環境では、次のようになっている。
 
 ~~~
 maho:~ maho$ docker images
@@ -149,7 +153,7 @@ harbor.labo.local/tkr/nginx   latest             298ec0e28760   5 days ago      
 maho:~ maho$ docker rmi -f 298ec0e28760
 ~~~
 
-プルの実行
+Harborからnignx:latestをプルして、コンテナイメージが取得できることを確認する。
 
 ~~~
 maho:~ maho$ docker pull harbor.labo.local/tkr/nginx:latest
@@ -164,13 +168,74 @@ Status: Downloaded newer image for harbor.labo.local/tkr/nginx:latest
 harbor.labo.local/tkr/nginx:latest
 ~~~
 
-プルできたことを確認する
+以下のようになっていれば、プルに成功したことになる。
 
 ~~~
 maho:~ maho$ docker images
 REPOSITORY                    TAG                IMAGE ID       CREATED         SIZE
 harbor.labo.local/tkr/nginx   latest             298ec0e28760   5 days ago      133MB
 ~~~
+
+
+## Kubernetes環境からプライベートリポジトリを利用する
+
+Harbor利用の検証はContainerd 1.4.3で実施しました。それより古いバージョンではテストしていません。
+前述のfetch-certsコマンドで取得した証明書をKubernetesのノードの/etc/containerdに配置します。
+配置するためのAnsibleプレイブックは、playbook/runtime_containerd/tasks/install_containerd.yaml
+である。
+
+
+Kubernetes上でHarborレジストリからコンテナイメージ取得するためのYAMLを2つ用意した。
+
+~~~
+tkr@yukikaze:~/marmot-harbor$ tree k8s-yaml/
+k8s-yaml/
+├── pod.yaml
+└── webserver.yaml
+~~~
+
+pod.yamlはポッド単独でデプロイするもので、テストに利用できる。そして、webserver.yamlは複数のポッドを同時にデプロイできるので、クラスタの動作テストに利用すると良い。
+
+
+## 実行例 パブリックリポジトリ
+
+パスワード認証の必要が無いパブリックリポジトリから取得するケースから見ていく。
+
+~~~pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: harbor.labo.local/tkr/nginx:latest #<<-- Harborのリポジトリを設定する
+    imagePullPolicy: Always
+~~~
+
+実行例
+
+~~~
+kubectl apply -f pod.yaml
+~~~
+
+
+
+
+## プライベートリポジトリのケース
+
+~~~
+docker login -u tkr harbor.labo.local
+docker pull nginx
+docker tag nginx:latest harbor.labo.local/x/nginx:latest
+docker push harbor.labo.local/x/nginx:latest
+kubectl create secret docker-registry regcred --docker-server=harbor.labo.local --docker-username=tkr --docker-password=`*****` --docker-email=takara@labo.local
+~~~
+
+~~~
+kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+~~~
+
 
 
 
