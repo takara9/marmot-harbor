@@ -1,0 +1,37 @@
+#
+# Nginx サーバーをデプロイするマニフェスト
+#　 Nginxのデフォルトの画面を表示
+#
+## サービス(type NodePort)
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver
+spec:
+  selector:
+    app: web
+  ports:
+  - protocol: TCP
+    port: 80
+    nodePort: 30080
+  type: NodePort
+---
+## デプロイメント 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+spec:
+  replicas: 5
+  selector:           # これは deployment - pod 対応用
+    matchLabels:
+      app: web
+  template:           # ここからポッド・テンプレート
+    metadata:
+      labels:
+        app: web      # ポッドのラベル
+    spec:
+      containers:
+      - name: nginx
+        image: harbor.labo.local/tkr/nginx:latest	      
+        imagePullPolicy: Always
