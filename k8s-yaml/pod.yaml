@@ -8,4 +8,5 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: harbor.labo.local/library/nginx:latest
+    image: harbor.labo.local/tkr/nginx:latest
+    imagePullPolicy: Always
