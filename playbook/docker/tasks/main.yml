@@ -48,6 +48,42 @@
     group: root
     mode: '0666'
 
+########
+
+- name: mkdir dest dir
+  file:
+    path:  "/etc/docker/certs.d/{{ fqdn }}"
+    state: directory
+
+- name: Download Web-Site SSL Certs
+  get_url:
+    url:  "https://{{ ca_ip }}/{{ fqdn }}/{{ fqdn }}.crt"
+    dest: "/etc/docker/certs.d/{{ fqdn }}/{{ fqdn }}.cert"
+    validate_certs: no
+    mode: 0440
+- get_url:
+    url:  "https://{{ ca_ip }}/{{ fqdn }}/{{ fqdn }}.key"
+    dest: "/etc/docker/certs.d/{{ fqdn }}/{{ fqdn }}.key"
+    validate_certs: no
+    mode: 0440
+- get_url:
+    url:  "https://{{ ca_ip }}/ca.pem"
+    dest: "/etc/docker/certs.d/{{ fqdn }}/labo_local_ca.pem"
+    validate_certs: no
+    mode: 0440
+
+- name: Download CA pem
+  get_url:
+    url:  "https://{{ ca_ip }}/ca.pem"
+    dest: /etc/docker/certs.d/ca.pem
+    validate_certs: no
+    mode: 0440
+
+
+
+
+######
+
 - name: Re-Start dockerd
   systemd:
     name: docker
