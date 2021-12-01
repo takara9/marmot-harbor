@@ -11,11 +11,7 @@
     my_data:   /harbor
     dst_dir:   /harbor/certs
     disk_sdc:  "{{ my_data }}"
-    ca_ip:     "192.168.1.220"
-    disk1:     /dev/vdb
-    disk2:     /dev/vdc
-    public_ip_dns: "192.168.1.241"    
-    public_ip_addr: "192.168.1.221"
+
 
   tasks:
   - name: Install a list of packages
