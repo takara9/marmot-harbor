@@ -2,3 +2,4 @@
 /vdisk/*.vdi
 *.log
 _*
+*~

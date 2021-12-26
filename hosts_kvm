@@ -22,5 +22,5 @@ disk1 = /dev/vdb
 disk2 = /dev/vdc
 public_ip_addr = "192.168.1.221"
 ca_ip          = "192.168.1.8"    
-public_ip_dns  = "192.168.1.4"    
+public_ip_dns  = "192.168.1.8"
 

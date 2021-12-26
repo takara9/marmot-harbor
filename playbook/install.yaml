@@ -5,12 +5,13 @@
 
   vars:
     cluster_admin: ubuntu
-    admin_user:    ubuntu    
-    my_host:   harbor
-    fqdn:      "{{ my_host }}.labo.local"
-    my_data:   /harbor
-    dst_dir:   /harbor/certs
-    disk_sdc:  "{{ my_data }}"
+    admin_user:    ubuntu
+    mail_domain:   "labo.local"     
+    my_host:       "harbor"
+    fqdn:          "{{ my_host }}.labo.local"
+    my_data:       /harbor
+    dst_dir:       /harbor/certs
+    disk_sdc:      "{{ my_data }}"
 
 
   tasks:
@@ -27,9 +28,11 @@
       - software-properties-common
   roles:
     - base_linux
+    - mail-client    
     - docker
     - vdisks
     - download_certs
+
     
   tasks:
   #- debug: msg="{{ ansible_facts }}"
@@ -136,4 +139,4 @@
       ./install.sh
     args:
       chdir: /harbor/harbor
-      
+
