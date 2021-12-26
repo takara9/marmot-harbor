@@ -2,7 +2,7 @@
 # 最小構成のHarbor
 #
 domain: labs.local
-cluster_name: harbor
+cluster_name: infra
 
 ## Hypervisor type
 hypervisor: kvm
@@ -23,7 +23,7 @@ private_ip_subnet: 172.16.0.0/16
 public_ip_subnet:  192.168.1.0/24
 
 public_ip_gw:  192.168.1.1
-public_ip_dns: 192.168.1.4
+public_ip_dns: 192.168.1.8
 
 ### Network device and config
 net_dev_default: enp1s0
