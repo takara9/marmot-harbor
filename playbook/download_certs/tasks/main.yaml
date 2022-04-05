@@ -8,6 +8,18 @@
     validate_certs: no
     mode: 0440
 
+- name: Download CA pem for Ubuntu 20.04 ca-certs
+  get_url:
+    url: "https://{{ ca_ip }}/ca.pem"
+    dest: /usr/share/ca-certificates/labo_local_ca.crt
+    validate_certs: no
+    mode: 0440
+
+- name: Execute update-ca-certificates
+  shell: |
+    echo "labo_local_ca.crt" >> /etc/ca-certificates.conf
+    update-ca-certificates
+
 #
 # ウェブサイト用の証明書の取得
 #
@@ -33,7 +45,6 @@
 # Vagrant用の設定　既に不要？
 #
 #- debug: msg="virtualization_type = {{ ansible_facts.virtualization_type }}"
-  
 #- shell: |
 #    cp {{ domain }}.cert /vagrant/{{ domain }}.cert
 #    cp {{ domain }}.key  /vagrant/{{ domain }}.key

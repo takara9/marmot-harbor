@@ -12,7 +12,7 @@
     my_data:       /harbor
     dst_dir:       /harbor/certs
     disk_sdc:      "{{ my_data }}"
-
+    harbor_ver:    "v2.4.2"
 
   tasks:
   - name: Install a list of packages
@@ -35,16 +35,15 @@
 
     
   tasks:
-  #- debug: msg="{{ ansible_facts }}"
   #- debug: msg="{{ ansible_facts.enp0s9.ipv4.address }}"
 
   - name: Download the Harbor Installer
     shell: |
       gpg --keyserver hkps://keyserver.ubuntu.com --receive-keys 644FF454C0B4115C
-      curl -O -L https://github.com/goharbor/harbor/releases/download/v2.1.1/harbor-online-installer-v2.1.1.tgz
-      curl -O -L https://github.com/goharbor/harbor/releases/download/v2.1.1/harbor-online-installer-v2.1.1.tgz.asc
-      gpg -v –keyserver hkps://keyserver.ubuntu.com –verify harbor-online-installer-v2.1.1.tgz.asc
-      tar xzvf harbor-online-installer-v2.1.1.tgz
+      curl -O -L https://github.com/goharbor/harbor/releases/download/{{ harbor_ver }}/harbor-online-installer-{{ harbor_ver }}.tgz
+      curl -O -L https://github.com/goharbor/harbor/releases/download/{{ harbor_ver }}/harbor-online-installer-{{ harbor_ver }}.tgz.asc
+      gpg -v –keyserver hkps://keyserver.ubuntu.com –verify harbor-online-installer-{{ harbor_ver }}.tgz.asc
+      tar xzvf harbor-online-installer-{{ harbor_ver }}.tgz
     args:
       chdir: /harbor
 
@@ -53,81 +52,23 @@
       path: /harbor/certs
       state: directory
 
-  ####################################
-  #- name: copy v3.ext to /harbor/certs
-  #  template:
-  #    src: v3.ext.j2
-  #    dest: /harbor/certs/v3.ext
-  #    
-  #- name: Configure HTTPS Access to Harbor
-  #  shell: |
-  #    openssl genrsa -out ca.key 4096
-  #    openssl req -x509 -new -nodes -sha512 -days 3650 \
-  #       -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labo.local" \
-  #       -key ca.key \
-  #       -out ca.crt
-  #    openssl genrsa -out harbor.labo.local.key 4096
-  #    touch ~/.rnd
-  #    openssl req -sha512 -new \
-  #       -subj "/C=JP/ST=Tokyo/L=Tokyo/O=homelab/OU=homelab/CN=harbor.labo.local" \
-  #       -key harbor.labo.local.key \
-  #       -out harbor.labo.local.csr      
-  #    openssl x509 -req -sha512 -days 3650 \
-  #      -extfile v3.ext \
-  #      -CA ca.crt -CAkey ca.key -CAcreateserial \
-  #      -in harbor.labo.local.csr \
-  #      -out harbor.labo.local.crt
-  #    openssl x509 -inform PEM -in harbor.labo.local.crt -out harbor.labo.local.cert
+  #- get_url:
+  #    url:  "https://{{ ca_ip }}/ca.pem"
+  #    dest: /harbor/certs/harbor_internal_ca.crt
+  #    validate_certs: no
+  #    mode: 0440
   #
-  #### Docker用
-  #    mkdir -p /etc/docker/certs.d/harbor.labo.local
-  #    cp harbor.labo.local.cert /etc/docker/certs.d/harbor.labo.local
-  #    cp harbor.labo.local.key /etc/docker/certs.d/harbor.labo.local
-  #    cp ca.crt /etc/docker/certs.d/harbor.labo.local
-  #    systemctl restart docker
-  #  args:
-  #    chdir: /harbor/certs
+  #- get_url:
+  #    url:  "https://{{ ca_ip }}/ca.key"
+  #    dest: /harbor/certs/harbor_internal_ca.key
+  #    validate_certs: no
+  #    mode: 0440
   #
-  #- debug: msg="virtualization_type = {{ ansible_facts.virtualization_type }}"
-  # 
-  #- shell: |
-  #    cp harbor.labo.local.cert /vagrant/harbor.labo.local.cert
-  #    cp harbor.labo.local.key /vagrant/harbor.labo.local.key
-  #    cp ca.crt /vagrant/ca.crt
-  #  args:
-  #    chdir: /harbor/certs
-  #  when: ansible_facts.virtualization_type == "virtualbox"
-  #
-  #### こちらは不要？？
   #- name: Configure Internal TLS communication between Harbor Component
   #  shell: |
-  #    cp ca.crt harbor_internal_ca.crt
-  #    cp ca.key harbor_internal_ca.key
-  #    docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p /harbor/certs
+  #    docker run -v /:/hostfs goharbor/prepare:{{ harbor_ver }} gencert -p /harbor/certs
   #  args:
-  #   chdir: /harbor/certs
-  ####################################
-
-
-  - get_url:
-      url:  "https://{{ ca_ip }}/ca.pem"
-      dest: /harbor/certs/harbor_internal_ca.crt
-      validate_certs: no
-      mode: 0440
-
-  - get_url:
-      url:  "https://{{ ca_ip }}/ca.key"
-      dest: /harbor/certs/harbor_internal_ca.key
-      validate_certs: no
-      mode: 0440
-
-
-
-  - name: Configure Internal TLS communication between Harbor Component
-    shell: |
-      docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p /harbor/certs
-    args:
-     chdir: /harbor/certs
+  #    chdir: /harbor/certs
 
   - name: copy harbor.yml
     template:
