@@ -1,0 +1,22 @@
+#
+# 最小構成のHarbor
+#
+domain: labs.local
+cluster_name: infra
+os_variant:  ubuntu20.04
+
+## Virtual Machine Spec
+vm_spec:
+  - name: "harbor"
+    cpu: 2
+    memory: 4096
+    private_ip:  "172.16.0.221"
+    public_ip:   "192.168.1.221"
+    storage:
+    - name: /dev/vdb
+      size: 100
+      vg:   vg3
+    vm_host: auto
+    playbook: install.yaml
+    comment: "Container Registry Server"
+

@@ -6,7 +6,7 @@
   vars:
     cluster_admin: ubuntu
     admin_user:    ubuntu
-    mail_domain:   "labo.local"     
+    mail_domain:   "labo.local"
     my_host:       "harbor"
     fqdn:          "{{ my_host }}.labo.local"
     my_data:       /harbor
@@ -28,12 +28,11 @@
       - software-properties-common
   roles:
     - base_linux
-    - mail-client    
+    - mail-client
     - docker
     - vdisks
     - download_certs
 
-    
   tasks:
   #- debug: msg="{{ ansible_facts.enp0s9.ipv4.address }}"
 
@@ -52,24 +51,6 @@
       path: /harbor/certs
       state: directory
 
-  #- get_url:
-  #    url:  "https://{{ ca_ip }}/ca.pem"
-  #    dest: /harbor/certs/harbor_internal_ca.crt
-  #    validate_certs: no
-  #    mode: 0440
-  #
-  #- get_url:
-  #    url:  "https://{{ ca_ip }}/ca.key"
-  #    dest: /harbor/certs/harbor_internal_ca.key
-  #    validate_certs: no
-  #    mode: 0440
-  #
-  #- name: Configure Internal TLS communication between Harbor Component
-  #  shell: |
-  #    docker run -v /:/hostfs goharbor/prepare:{{ harbor_ver }} gencert -p /harbor/certs
-  #  args:
-  #    chdir: /harbor/certs
-
   - name: copy harbor.yml
     template:
       src: harbor.yml.j2
@@ -80,4 +61,42 @@
       ./install.sh
     args:
       chdir: /harbor/harbor
+
+  - name: Wait for Start
+    shell: |
+      sleep 60
+    args:
+      chdir: /harbor/harbor
+
+  - name: Stop Harbor
+    shell: |
+       docker-compose down
+    args:
+      chdir: /harbor/harbor
+
+  - name: Setup as service
+    template:
+      src: docker-compose.service.j2
+      dest: /etc/systemd/system/harbor.service
+
+  - name: Make sure a service unit is running
+    ansible.builtin.systemd:
+      state: started
+      name: harbor
+
+  - name: copy backup shell script
+    ansible.builtin.copy:
+      src: backup.sh
+      dest: /usr/local/bin
+      owner: root
+      group: root
+      mode: '0750'
+
+  - name: copy restore shell script
+    ansible.builtin.copy:
+      src: restore_latest.sh
+      dest: /usr/local/bin
+      owner: root
+      group: root
+      mode: '0750'
 

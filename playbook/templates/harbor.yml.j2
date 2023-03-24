@@ -13,7 +13,7 @@ database:
   password: root123
   max_idle_conns: 50
   max_open_conns: 1000
-data_volume: /harbor
+data_volume: /harbor/data
 clair:
   updaters_interval: 12
 trivy:
@@ -31,7 +31,7 @@ log:
   local:
     rotate_count: 50
     rotate_size: 200M
-    location: /var/log/harbor
+    location: /harbor/log
 _version: 2.0.0
 proxy:
   http_proxy:

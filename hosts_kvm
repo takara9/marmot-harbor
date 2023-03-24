@@ -2,8 +2,8 @@
 ### ノードのリストとアクセス方法
 ###
 
-harbor    ansible_connection=local
-
+#harbor    ansible_connection=local
+harbor    ansible_ssh_host=172.16.0.221  ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_ssh_user=root
 
 ###
 ### プレイブックに与える変数
@@ -21,6 +21,8 @@ admin_user = ubuntu
 disk1 = /dev/vdb
 disk2 = /dev/vdc
 public_ip_addr = "192.168.1.221"
-ca_ip          = "192.168.1.8"    
-public_ip_dns  = "192.168.1.8"
+###ca_ip          = "192.168.1.8"    
+###public_ip_dns  = "192.168.1.8"
+ca_ip          = "172.16.0.8"
+public_ip_dns  = "172.16.0.8"
 
